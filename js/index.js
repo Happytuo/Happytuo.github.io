@@ -1,4 +1,22 @@
 (function() {
+  //障礙產生時的Y座標
+  const getRandomYaxis = () => {
+    return Math.floor(Math.random() * 9) * 50 + 125;
+  }
+
+  //障礙是否產生
+  const isBarrierSpawn = () => {
+    const random = Math.random();
+    if (random < 0.95) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  //當前角色的Y座標
+  let playerCurrentYaxis = 375;
+
   const gameStart = {
     key: 'gameStart',
     preload: function() {
@@ -6,14 +24,20 @@
       this.load.image('mountain', '../images/mountain.png');
       this.load.image('ground', '../images/ground.jpg');
 
+      this.load.image('bucket', '../images/bucket.png');
+      this.load.image('stone', '../images/stone.png');
+
+      this.load.image('mail', '../images/mail.png');
+
       this.load.spritesheet('player', '../images/player.png', {frameWidth: 69 , frameHeight: 50});
     },
     create: function() {
       this.sky = this.add.tileSprite(400, 50, 800, 100, 'sky');
       this.mountain = this.add.tileSprite(400, 90, 800, 50, 'mountain');
       this.ground = this.add.tileSprite(400, 350, 800, 500, 'ground');
-
-      this.player = this.physics.add.sprite(50, 375, 'player');
+      
+      this.player = this.physics.add.sprite(250, playerCurrentYaxis, 'player');
+      this.player.setCollideWorldBounds(true);
 
       this.anims.create({
         key: 'run',
@@ -22,15 +46,18 @@
         repeat: -1
       });
 
-      this.input.keyboard.on('keyup', function(event) {
-        console.log(event);
-        console.log(this);
+      //keyboard event
+      this.input.keyboard.on('keydown', function(event) {
         switch (event.keyCode) {
           case 38:
-            this.scene.player.y -= 50;
+            if (this.scene.player.y >= 150 && this.scene.player.y === playerCurrentYaxis) {
+              playerCurrentYaxis -= 50;
+            }
             break;
           case 40:
-            this.scene.player.y += 50;
+            if (this.scene.player.y <= 500 && this.scene.player.y === playerCurrentYaxis) {
+              playerCurrentYaxis += 50;
+            }
             break;
         }
       })
@@ -40,24 +67,14 @@
       this.sky.tilePositionX += 2;
       this.mountain.tilePositionX += 4;
       this.ground.tilePositionX += 4;
-
       this.player.anims.play('run', true);
 
-      // console.log(this);
-
-      // this.player.y -= 50;
-
-      // let cursors = this.input.keyboard.createCursorKeys();
-
-      // if (cursors.up.isDown) {
-      //   this.player.setVelocityY(-100);
-      //   console.log('up');
-      // } else if (cursors.down.isDown) {
-      //   this.player.setVelocityY(100);
-      // } else {
-      //   this.player.anims.play('run', true);
-      //   this.player.setVelocityY(0);
-      // }
+      //偵測角色是否需要移動
+      if (this.player.y > playerCurrentYaxis) {
+        this.player.y -= 5;
+      } else if (this.player.y < playerCurrentYaxis) {
+        this.player.y += 5;
+      }
     }
   }
 
