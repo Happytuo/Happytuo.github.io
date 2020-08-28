@@ -1,4 +1,5 @@
 (function() {
+
   //障礙產生時的Y座標
   const getRandomYaxis = () => {
     return Math.floor(Math.random() * 9) * 50 + 125;
@@ -7,11 +8,21 @@
   //障礙是否產生
   const isBarrierSpawn = () => {
     const random = Math.random();
-    if (random < 0.95) {
+    if (random < 0.98) {
       return false;
     } else {
       return true;
     }
+  }
+
+  //障礙種類
+  const barrierArr = ['bucket', 'stone'];
+
+  //障礙選擇器
+  const barrierSelector = (arr) => {
+    const random = Math.random() * arr.length;
+
+    return Math.floor(random);
   }
 
   //當前角色的Y座標
@@ -27,9 +38,11 @@
       this.load.image('bucket', '../images/bucket.png');
       this.load.image('stone', '../images/stone.png');
 
-      this.load.image('mail', '../images/mail.png');
-
       this.load.spritesheet('player', '../images/player.png', {frameWidth: 69 , frameHeight: 50});
+      this.load.spritesheet('mail', '../images/mail.png', {frameWidth: 35 , frameHeight: 35});
+
+      this.barrier = {};
+      this.barrierArr = [];
     },
     create: function() {
       this.sky = this.add.tileSprite(400, 50, 800, 100, 'sky');
@@ -38,6 +51,9 @@
       
       this.player = this.physics.add.sprite(250, playerCurrentYaxis, 'player');
       this.player.setCollideWorldBounds(true);
+      this.player.setSize(50, 40);
+
+      console.log(this.player);
 
       this.anims.create({
         key: 'run',
@@ -69,11 +85,34 @@
       this.ground.tilePositionX += 4;
       this.player.anims.play('run', true);
 
+      //判斷障礙物產生
+      if (isBarrierSpawn()) {
+        const barrierType = barrierArr[barrierSelector(barrierArr)];
+        if (!this.barrier[barrierType]) {
+          this.barrier[barrierType] = this.physics.add.image(900, getRandomYaxis(), barrierType);
+          this.barrier[barrierType].setSize(this.barrier[barrierType].width, 50);
+          this.physics.add.collider(this.player, this.barrier[barrierType]);
+        }
+        console.log(this.barrier);
+      }
+
       //偵測角色是否需要移動
       if (this.player.y > playerCurrentYaxis) {
         this.player.y -= 5;
       } else if (this.player.y < playerCurrentYaxis) {
         this.player.y += 5;
+      }
+
+      //移動障礙
+      if (this.barrier) {
+        Object.values(this.barrier).forEach((barrier) => {
+          if (barrier.x <= -50) {
+            barrier.y = getRandomYaxis();
+            barrier.x = 900
+          } else {
+            barrier.x -= 4;
+          }
+        });
       }
     }
   }
