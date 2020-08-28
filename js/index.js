@@ -16,7 +16,7 @@
   }
 
   //障礙種類
-  const barrierArr = ['bucket', 'stone'];
+  const barrierTypeArr = ['bucket', 'stone'];
 
   //障礙選擇器
   const barrierSelector = (arr) => {
@@ -41,7 +41,6 @@
       this.load.spritesheet('player', '../images/player.png', {frameWidth: 69 , frameHeight: 50});
       this.load.spritesheet('mail', '../images/mail.png', {frameWidth: 35 , frameHeight: 35});
 
-      this.barrier = {};
       this.barrierArr = [];
     },
     create: function() {
@@ -53,7 +52,7 @@
       this.player.setCollideWorldBounds(true);
       this.player.setSize(50, 40);
 
-      console.log(this.player);
+      this.barrierGroup = this.physics.add.group();
 
       this.anims.create({
         key: 'run',
@@ -87,13 +86,15 @@
 
       //判斷障礙物產生
       if (isBarrierSpawn()) {
-        const barrierType = barrierArr[barrierSelector(barrierArr)];
-        if (!this.barrier[barrierType]) {
-          this.barrier[barrierType] = this.physics.add.image(900, getRandomYaxis(), barrierType);
-          this.barrier[barrierType].setSize(this.barrier[barrierType].width, 50);
-          this.physics.add.collider(this.player, this.barrier[barrierType]);
-        }
-        console.log(this.barrier);
+        const barrierType = barrierTypeArr[barrierSelector(barrierTypeArr)];
+        this.barrierArr.push(this.physics.add.image(900, getRandomYaxis(), barrierType));
+        this.barrierGroup.add(this.physics.add.image(900, getRandomYaxis(), barrierType))
+        console.log(this.barrierArr);
+        // this.barrierArr.pop().setSize(this.barrierArr.pop().width, 50);
+        // this.physics.add.collider(this.player, this.barrierArr.pop());
+        // this.barrier[barrierType] = this.physics.add.image(900, getRandomYaxis(), barrierType);
+        // this.barrier[barrierType].setSize(this.barrier[barrierType].width, 50);
+        // this.physics.add.collider(this.player, this.barrier[barrierType]);
       }
 
       //偵測角色是否需要移動
@@ -104,11 +105,10 @@
       }
 
       //移動障礙
-      if (this.barrier) {
-        Object.values(this.barrier).forEach((barrier) => {
+      if (this.barrierArr) {
+        this.barrierArr.forEach((barrier, index) => {
           if (barrier.x <= -50) {
-            barrier.y = getRandomYaxis();
-            barrier.x = 900
+            this.barrierArr.splice(index, 1);
           } else {
             barrier.x -= 4;
           }
