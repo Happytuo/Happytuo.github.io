@@ -88,8 +88,9 @@
       if (isBarrierSpawn()) {
         const barrierType = barrierTypeArr[barrierSelector(barrierTypeArr)];
         this.barrierArr.push(this.physics.add.image(900, getRandomYaxis(), barrierType));
-        this.barrierGroup.add(this.physics.add.image(900, getRandomYaxis(), barrierType))
-        console.log(this.barrierArr);
+        console.log(this);
+        // this.barrierGroup.add(this.physics.add.image(900, getRandomYaxis(), barrierType))
+        // console.log(this.barrierArr);
         // this.barrierArr.pop().setSize(this.barrierArr.pop().width, 50);
         // this.physics.add.collider(this.player, this.barrierArr.pop());
         // this.barrier[barrierType] = this.physics.add.image(900, getRandomYaxis(), barrierType);
@@ -108,7 +109,7 @@
       if (this.barrierArr) {
         this.barrierArr.forEach((barrier, index) => {
           if (barrier.x <= -50) {
-            this.barrierArr.splice(index, 1);
+            barrier.destroy();
           } else {
             barrier.x -= 4;
           }
