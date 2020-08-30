@@ -18,15 +18,22 @@
   //障礙種類
   const barrierTypeArr = ['bucket', 'stone'];
 
-  //障礙選擇器
-  const barrierSelector = (arr) => {
+   //陣列隨機選擇器
+  const arrayRandomSelector = (arr) => {
     const random = Math.random() * arr.length;
 
-    return Math.floor(random);
+    return arr[Math.floor(random)];
+  }
+
+  const randomNumberSelector = (max, min) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
   //當前角色的Y座標
   let playerCurrentYaxis = 375;
+  
+  //最大障礙數量
+  let maxBarriers = 7;
 
   const gameStart = {
     key: 'gameStart',
@@ -52,7 +59,8 @@
       this.player.setCollideWorldBounds(true);
       this.player.setSize(50, 40);
 
-      this.barrierGroup = this.physics.add.group();
+      this.barriers = this.physics.add.group();
+      this.physics.add.collider(this.player, this.barriers);
 
       this.anims.create({
         key: 'run',
@@ -75,27 +83,31 @@
             }
             break;
         }
-      })
+      });
+
+      //gameOver
+      function gameOver(player) {
+        console.log(player);
+        // console.log(game)
+        // game.physics.pause();
+        // game.scene.start('gameOver');
+      }
 
     },
     update: function() {
+      if(this.gameStop) return;
       this.sky.tilePositionX += 2;
       this.mountain.tilePositionX += 4;
       this.ground.tilePositionX += 4;
       this.player.anims.play('run', true);
 
       //判斷障礙物產生
-      if (isBarrierSpawn()) {
-        const barrierType = barrierTypeArr[barrierSelector(barrierTypeArr)];
-        this.barrierArr.push(this.physics.add.image(900, getRandomYaxis(), barrierType));
-        console.log(this);
-        // this.barrierGroup.add(this.physics.add.image(900, getRandomYaxis(), barrierType))
-        // console.log(this.barrierArr);
-        // this.barrierArr.pop().setSize(this.barrierArr.pop().width, 50);
-        // this.physics.add.collider(this.player, this.barrierArr.pop());
-        // this.barrier[barrierType] = this.physics.add.image(900, getRandomYaxis(), barrierType);
-        // this.barrier[barrierType].setSize(this.barrier[barrierType].width, 50);
-        // this.physics.add.collider(this.player, this.barrier[barrierType]);
+      if (isBarrierSpawn() && this.barrierArr.length !== maxBarriers) {
+        const barrierType = arrayRandomSelector(barrierTypeArr);
+        this.barrierArr.push(this.barriers.create(randomNumberSelector(500, 0) + 850, getRandomYaxis(), barrierType));
+
+        this.barrierArr[this.barrierArr.length - 1].setSize(80, 50);
+        this.physics.add.collider(this.player, this.barrierArr[this.barrierArr.length - 1]);
       }
 
       //偵測角色是否需要移動
@@ -109,13 +121,18 @@
       if (this.barrierArr) {
         this.barrierArr.forEach((barrier, index) => {
           if (barrier.x <= -50) {
-            barrier.destroy();
+            barrier.x = randomNumberSelector(500, 0) + 850;
+            barrier.y
           } else {
             barrier.x -= 4;
           }
         });
       }
     }
+  }
+
+  const gameOver = {
+    key: 'gameOver'
   }
 
   const config = {
