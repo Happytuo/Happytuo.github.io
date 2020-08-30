@@ -8,11 +8,13 @@
   //障礙是否產生
   const isBarrierSpawn = () => {
     const random = Math.random();
-    if (random < 0.98) {
-      return false;
-    } else {
-      return true;
-    }
+    return random >= 0.98;
+  }
+
+  //信封是否產生
+  const isMailSpawn = () => {
+    const random = Math.random();
+    return random >= 0.95;
   }
 
   //障礙種類
@@ -35,6 +37,9 @@
   //最大障礙數量
   let maxBarriers = 7;
 
+  //最大信封數量
+  let maxMails = 5;
+
   const gameStart = {
     key: 'gameStart',
     preload: function() {
@@ -45,10 +50,13 @@
       this.load.image('bucket', '../images/bucket.png');
       this.load.image('stone', '../images/stone.png');
 
+      this.load.image('single_mail', '../images/simgle_mail.png');
+
       this.load.spritesheet('player', '../images/player.png', {frameWidth: 69 , frameHeight: 50});
       this.load.spritesheet('mail', '../images/mail.png', {frameWidth: 35 , frameHeight: 35});
 
       this.barrierArr = [];
+      this.mailArr = [];
     },
     create: function() {
       this.sky = this.add.tileSprite(400, 50, 800, 100, 'sky');
@@ -58,6 +66,7 @@
       this.player = this.physics.add.sprite(250, playerCurrentYaxis, 'player');
       this.player.setCollideWorldBounds(true);
       this.player.setSize(50, 40);
+      this.player.setDepth(1);
 
       this.barriers = this.physics.add.group();
       this.physics.add.collider(this.player, this.barriers);
@@ -84,15 +93,6 @@
             break;
         }
       });
-
-      //gameOver
-      function gameOver(player) {
-        console.log(player);
-        // console.log(game)
-        // game.physics.pause();
-        // game.scene.start('gameOver');
-      }
-
     },
     update: function() {
       if(this.gameStop) return;
@@ -110,6 +110,13 @@
         this.physics.add.collider(this.player, this.barrierArr[this.barrierArr.length - 1]);
       }
 
+      //判斷信封產生
+      if (isMailSpawn() && this.mailArr.length !== maxMails) {
+        this.mailArr.push(this.physics.add.sprite(randomNumberSelector(500, 0) + 850, getRandomYaxis(), 'single_mail'));
+
+        this.physics.add.collider(this.player, this.mail);
+      }
+
       //偵測角色是否需要移動
       if (this.player.y > playerCurrentYaxis) {
         this.player.y -= 5;
@@ -117,9 +124,21 @@
         this.player.y += 5;
       }
 
+      //移動信封
+      if (this.mailArr) {
+        this.mailArr.forEach((mail) => {
+          if (mail.x <= -50) {
+            mail.x = randomNumberSelector(500, 0) + 850;
+            mail.y
+          } else {
+            mail.x -= 4;
+          }
+        });
+      }
+
       //移動障礙
       if (this.barrierArr) {
-        this.barrierArr.forEach((barrier, index) => {
+        this.barrierArr.forEach((barrier) => {
           if (barrier.x <= -50) {
             barrier.x = randomNumberSelector(500, 0) + 850;
             barrier.y
