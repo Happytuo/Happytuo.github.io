@@ -78,6 +78,21 @@
         repeat: -1
       });
 
+      for (let i = 1; i <= maxBarriers; i++) {
+        const barrierType = arrayRandomSelector(barrierTypeArr);
+        this.barrierArr.push(this.barriers.create(randomNumberSelector(1000, 0) + 850, getRandomYaxis(), barrierType));
+        this.physics.add.collider(this.player, this.barrierArr[this.barrierArr.length - 1]);
+      }
+
+      for (let i = 1; i <= maxMails; i++) {
+        this.mailArr.push(this.physics.add.sprite(randomNumberSelector(1000, 0) + 850, getRandomYaxis(), 'single_mail'));
+        this.physics.add.collider(this.player, this.mailArr[this.mailArr.length - 1], getMail);
+      }
+
+      function getMail() {
+        console.log(game);
+      }
+
       //keyboard event
       this.input.keyboard.on('keydown', function(event) {
         switch (event.keyCode) {
@@ -102,20 +117,20 @@
       this.player.anims.play('run', true);
 
       //判斷障礙物產生
-      if (isBarrierSpawn() && this.barrierArr.length !== maxBarriers) {
-        const barrierType = arrayRandomSelector(barrierTypeArr);
-        this.barrierArr.push(this.barriers.create(randomNumberSelector(500, 0) + 850, getRandomYaxis(), barrierType));
+      // if (isBarrierSpawn() && this.barrierArr.length !== maxBarriers) {
+      //   const barrierType = arrayRandomSelector(barrierTypeArr);
+      //   this.barrierArr.push(this.barriers.create(randomNumberSelector(500, 0) + 850, getRandomYaxis(), barrierType));
 
-        this.barrierArr[this.barrierArr.length - 1].setSize(80, 50);
-        this.physics.add.collider(this.player, this.barrierArr[this.barrierArr.length - 1]);
-      }
+      //   this.barrierArr[this.barrierArr.length - 1].setSize(80, 50);
+      //   this.physics.add.collider(this.player, this.barrierArr[this.barrierArr.length - 1]);
+      // }
 
       //判斷信封產生
-      if (isMailSpawn() && this.mailArr.length !== maxMails) {
-        this.mailArr.push(this.physics.add.sprite(randomNumberSelector(500, 0) + 850, getRandomYaxis(), 'single_mail'));
+      // if (isMailSpawn() && this.mailArr.length !== maxMails) {
+      //   this.mailArr.push(this.physics.add.sprite(randomNumberSelector(500, 0) + 850, getRandomYaxis(), 'single_mail'));
 
-        this.physics.add.collider(this.player, this.mail);
-      }
+      //   this.physics.add.collider(this.player, this.mail);
+      // }
 
       //偵測角色是否需要移動
       if (this.player.y > playerCurrentYaxis) {
