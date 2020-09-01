@@ -121,16 +121,15 @@
         }
       });
 
+      //pointer event
       this.input.on('pointerdown', function(pointer) {
-        if (this.scene.player.y >= 150 && this.scene.player.y === playerCurrentYaxis) {
-          if (pointer.y < 400) {
+        if (pointer.y < 400 && this.scene.player.y >= 150 && this.scene.player.y === playerCurrentYaxis) {
             playerCurrentYaxis -= 50;
-          } else {
-            playerCurrentYaxis += 50;
-          }
-        } else {
-          return;
-        }
+        } 
+
+        if (pointer.y > 400 && this.scene.player.y <= 500 && this.scene.player.y === playerCurrentYaxis) {
+          playerCurrentYaxis += 50;
+      } 
       });
     },
     update: function() {
