@@ -32,7 +32,6 @@
   const gameStart = {
     key: 'gameStart',
     preload: function() {
-      console.log(this);
       this.load.image('sky', '../images/sky.jpg');
       this.load.image('mountain', '../images/mountain.png');
       this.load.image('ground', '../images/ground.jpg');
@@ -119,6 +118,18 @@
               playerCurrentYaxis += 50;
             }
             break;
+        }
+      });
+
+      this.input.on('pointerdown', function(pointer) {
+        if (this.scene.player.y >= 150 && this.scene.player.y === playerCurrentYaxis) {
+          if (pointer.y < 400) {
+            playerCurrentYaxis -= 50;
+          } else {
+            playerCurrentYaxis += 50;
+          }
+        } else {
+          return;
         }
       });
     },
