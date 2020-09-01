@@ -84,7 +84,11 @@
       //得分!
       const getMail = (player, mail) => {
         this.score = this.score + 1;
+        console.log(mail);
         mail.destroy(true);
+        console.log(mail);
+        this.mailArr.push(this.physics.add.sprite(randomNumberSelector(1000, 0) + 850, getRandomYaxis(), 'single_mail'));
+        this.physics.add.collider(this.player, this.mailArr[this.mailArr.length - 1], getMail);
       }
 
       //產生障礙物
