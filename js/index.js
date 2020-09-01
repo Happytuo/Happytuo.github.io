@@ -79,6 +79,7 @@
         this.gameStop = true;
         this.physics.pause();
         alert(`遊戲結束, 你的分數是${this.score}分!`);
+        this.scene.start('gameStart')
       }
 
       //得分!
