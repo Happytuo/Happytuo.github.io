@@ -130,6 +130,7 @@
       this.ground.tilePositionX += 4;
       this.player.anims.play('run', true);
 
+      //更新分數
       this.scoreText.setText(`X ${this.score}`);
 
       //偵測角色是否需要移動
@@ -144,7 +145,7 @@
         this.mailArr.forEach((mail) => {
           if (mail.x <= -50) {
             mail.x = randomNumberSelector(500, 0) + 850;
-            mail.y
+            mail.y = getRandomYaxis();
           } else {
             mail.x -= 4;
           }
@@ -156,13 +157,14 @@
         this.barrierArr.forEach((barrier) => {
           if (barrier.x <= -50) {
             barrier.x = randomNumberSelector(500, 0) + 850;
-            barrier.y
+            barrier.y = getRandomYaxis();
           } else {
             barrier.x -= 4;
           }
         });
       }
 
+      //檢查物件位置避免重疊
       const checkPosition = () => {
         const allObj = this.barrierArr.concat(this.mailArr);
         const allObjSort = allObj.sort(function(a, b) {
@@ -171,7 +173,6 @@
 
         allObjSort.forEach((item, index) => {
           if (allObjSort[index + 1] && Math.abs(allObjSort[index].x - allObjSort[index + 1].x) < 100) {
-            console.log('AAAA');
             allObjSort[index].x = allObjSort[index + 1].x + 100;
           }
         });
