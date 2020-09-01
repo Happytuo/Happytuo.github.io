@@ -161,6 +161,22 @@
           }
         });
       }
+
+      const checkPosition = () => {
+        const allObj = this.barrierArr.concat(this.mailArr);
+        const allObjSort = allObj.sort(function(a, b) {
+          return b.x - a.x;
+        });
+
+        allObjSort.forEach((item, index) => {
+          if (allObjSort[index + 1] && Math.abs(allObjSort[index].x - allObjSort[index + 1].x) < 100) {
+            console.log('AAAA');
+            allObjSort[index].x = allObjSort[index + 1].x + 100;
+          }
+        });
+
+      }
+      checkPosition();
     }
   }
 
