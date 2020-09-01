@@ -129,7 +129,7 @@
 
         if (pointer.y > 400 && this.scene.player.y <= 500 && this.scene.player.y === playerCurrentYaxis) {
           playerCurrentYaxis += 50;
-      } 
+        } 
       });
     },
     update: function() {
