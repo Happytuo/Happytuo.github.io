@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <title>Document</title>
+    <script>
+        function generateCookieString(key, value, config) {
+            if (typeof key !== 'string') {
+                console.warn('Key must be a string');
+                return false;
+            }
+
+            if (!key) {
+                console.warn('Key is invalid');
+                return false;
+            }
+
+            if (typeof value !== 'string') {
+                console.warn('value must be a string');
+                return false;
+            }
+
+            if (!value) {
+                console.warn('Value is invalid');
+                return false;
+            }
+
+            if (typeof config !== 'object' || Array.isArray(config) || config === null) {
+                console.warn('Config must be an object');
+                return false;
+            }
+
+            let cookieString = `${key}=${value}`;
+            Object.keys(config).forEach(key => {
+                if (config[key] !== 'secure') {
+                    cookieString += `;${key}=${config[key]}`
+                } else {
+                    cookieString += ';secure';
+                }
+            });
+            return cookieString;
+        }
+
+        function setDataToStorage(key, value, config) {
+            if (typeof key !== 'string') {
+                console.warn('Key must be a string');
+                return false;
+            }
+
+            if (!key) {
+                console.warn('Key is invalid');
+                return false;
+            }
+
+            if (typeof value !== 'string') {
+                console.warn('value must be a string');
+                return false;
+            }
+
+            if (!value) {
+                console.warn('Value is invalid');
+                return false;
+            }
+
+            if (typeof config !== 'object' || Array.isArray(config) || config === null) {
+                console.warn('Config must be an object');
+                return false;
+            }
+            const cookieString = generateCookieString(key, value, config);
+            document.cookie = cookieString;
+            try {
+                window.localStorage.setItem(`${key}`, `${value}`);
+            } catch (err) {
+
+            }
+        }
+
+        function getDataFromStorage(key) {
+            if (typeof key !== 'string') {
+                console.warn('Key must be a string');
+                return false;
+            }
+            let cookieArr = document.cookie.split(';');
+            cookieArr = cookieArr.filter(item => {
+                return item.indexOf(`${key}=`) != -1;
+            });
+            if (!cookieArr[0]) {
+                try {
+                    return window.localStorage.getItem(key);
+                } catch (err) {
+                    return null;
+                }
+            }
+
+            return cookieArr[0].split('=')[1];
+        }
+
+        const getTopDomain = () => {
+            const hostStringArray = window.location.host.split(".");
+            hostStringArray[0] = "";
+            return hostStringArray.join(".");
+        };
+
+        function generateUID() {
+            if (window.crypto && typeof crypto.randomUUID === 'function') {
+                return window.crypto.randomUUID();
+            }
+
+            const S4 = function () {
+                return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+            };
+
+            return S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4();
+        }
+    </script>
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            if (!getDataFromStorage('vpadn-ctid')) {
+                const CTID = `v1_${generateUID()}.${new Date().getTime()}`;
+                const MAX_AGE = 63072000;
+                setDataToStorage("vpadn-ctid", CTID, {
+                    // domain: getTopDomain(),
+                    path: "/",
+                    secure: true,
+                    'max-age': MAX_AGE,
+                });
+            }
+
+            document.querySelector('#ctid').textContent = `${getDataFromStorage('vpadn-ctid')}(${location.host})`;
+
+            window.addEventListener("message", receiveRequestMessageHandler);
+
+            function receiveRequestMessageHandler(event) {
+                if (event.data.eventName === "requestUpxData") {
+                    event.source.postMessage(
+                        {
+                            eventName: "responseUpxData",
+                            data: {
+                                _upx_ctid: getDataFromStorage("vpadn-ctid")
+                            },
+                        },
+                        "*"
+                    );
+                }
+            }
+
+            const iframe = document.createElement('iframe');
+            iframe.src = 'https://staging-sdk.vpon.com/cookie-sync';
+            iframe.width = 400;
+            iframe.height = 300;
+            document.body.appendChild(iframe);
+        });
+    </script>
+</head>
+
+<body>
+    <h1>Top Frame</h1>
+    <p>CTID:<span id="ctid"></span></p>
+</body>
+
+</html>
