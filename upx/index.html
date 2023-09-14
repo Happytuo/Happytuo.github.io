@@ -4,22 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Github.io</title>
+    <title>Index2</title>
     <style>
         body {
             min-height: 500vh;
         }
     </style>
     <script>
-        !function(i,n){if(!i.VponPixel){i.VponPixel=function(i,n,e){VponPixel.actionQueue.push({action:i,option:n,data:e})},VponPixel.actionQueue=[];var e=n.createElement("script");e.src="./VponPixel.js",e.async=!0,n.head.appendChild(e),VponPixel("init","d.gYt8joQih7w6BglC0|cvKQbUgl0vcbpH.6892", {
-            GAID: 'G-LNVCKRGTRN',
-            PIXELID: '983369656269021',
-            crossDomainWhiteList: ['.google.com', '.vpon.com']
-        })}}(window,document);
+        !function (i, n) {
+            if (!i.VponPixel) {
+                i.VponPixel = function (i, n, e) { VponPixel.actionQueue.push({ action: i, option: n, data: e }) }, VponPixel.actionQueue = []; var e = n.createElement("script"); e.src = "./VponPixel.js", e.async = !0, n.head.appendChild(e), VponPixel("init", "d.gYt8joQih7w6BglC0|cvKQbUgl0vcbpH.6892", {
+                    GAID: 'G-LNVCKRGTRN',
+                    PIXELID: '983369656269021',
+                    crossDomainWhiteList: ['.google.com', '.vpon.com', '.github.io']
+                })
+            }
+        }(window, document);
     </script>
 </head>
 
 <body>
+    <div class="cookieContainer">
+        <h1>cookieContainer</h1>
+    </div>
+    <div class="queryString">
+        <h1>queryString</h1>
+    </div>
     <script>
         let cookieArr = document.cookie.split(';');
 
@@ -32,6 +42,16 @@
                 cookieContainer.appendChild(pTag);
             });
         }
+
+        const urlSearchParams = new URLSearchParams(location.search);
+        const queryString = document.querySelector('.queryString');
+
+        for (const [key, value] of urlSearchParams.entries()) {
+            const pTag = document.createElement('p');
+            pTag.textContent = `${key}=${value}`;
+            queryString.appendChild(pTag);
+        }
     </script>
 </body>
+
 </html>
